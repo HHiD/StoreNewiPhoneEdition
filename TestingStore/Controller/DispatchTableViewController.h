@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-
+@class OrderEntity;
 @interface DispatchTableViewController : UITableViewController
 
 @property (nonatomic, copy)NSString *identifier;
-
+@property (nonatomic, strong)OrderEntity *orderEntity;
 @end
