@@ -8,7 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol ClientServiceDelegate <NSObject>
+
+- (void)didFindService:(NSNetService *)service isMorecomming:(BOOL)moreComming;
+
+@end
+
 @interface ClientServiceBrowser : NSObject
+
+@property (nonatomic, weak) id<ClientServiceDelegate>delegate;
 
 + (instancetype)startWithServiceName:(NSString *)name;
 

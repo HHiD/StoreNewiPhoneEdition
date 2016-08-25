@@ -10,8 +10,8 @@
 
 @interface ClientServiceBrowser()<NSNetServiceBrowserDelegate>{
     NSString *_servicename;
-    NSNetServiceBrowser *_browser;
 }
+@property (nonatomic, strong)NSNetServiceBrowser *browser;
 
 @end
 
@@ -33,10 +33,20 @@
 
 #pragma mark -<ClientSide>
 - (void)clientBrowser{
-    _browser = [[NSNetServiceBrowser alloc] init];
-    [_browser setDelegate:self];
-    [_browser searchForServicesOfType:[NSString stringWithFormat:@"_%@._tcp.", _servicename]
-                            inDomain:@""];
+    [self.browser stop];
+    
+    NSString *serviceName = [NSString stringWithFormat:@"_%@HHD._tcp.", _servicename];
+    NSLog(@"Search ServiceName: %@", serviceName);
+    self.browser = [NSNetServiceBrowser new];
+    if (self.browser) {
+        [self.browser scheduleInRunLoop:[NSRunLoop currentRunLoop]
+                                forMode:NSDefaultRunLoopMode];
+        self.browser.includesPeerToPeer = YES;
+        [self.browser setDelegate:self];
+        [self.browser searchForServicesOfType:serviceName
+                                 inDomain:@""];
+        
+    }
 }
 
 #pragma mark-<NSNetServiceBrowserDelegate>
@@ -45,19 +55,14 @@
            didFindService:(NSNetService *)service
                moreComing:(BOOL)moreComing {
     NSLog(@"HAHA");
-    //    [self.model addObject:service];
-    //    if (!moreComing) [self.tableView reloadData];
+    if (self.delegate) {
+        [self.delegate didFindService:service isMorecomming:moreComing];
+    }
 }
 
 - (void)netServiceBrowser:(NSNetServiceBrowser *)netServiceBrowser
          didRemoveService:(NSNetService *)service
                moreComing:(BOOL)moreComing {
-    NSLog(@"HAHA");
-    //    [self.model removeObject:service];
-    //    if (!moreComing) [self.tableView reloadData];
-}
-
-- (void)netServiceBrowserWillSearch:(NSNetServiceBrowser *)browser{
     NSLog(@"HAHA");
 }
 

@@ -9,34 +9,52 @@
 #import "WelcomeViewController.h"
 #import "OrderTableViewController.h"
 #import "Server.h"
-@interface WelcomeViewController (){
+@interface WelcomeViewController ()<ServerPublishDelegate>{
     Server *_server;
+    NSString *_identifier;
 }
 
 @end
 
 @implementation WelcomeViewController
 
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
-    NSString *identifier = segue.identifier;
-    OrderTableViewController *orderVC = [segue destinationViewController];
-    orderVC.identifier = identifier;
+- (IBAction)masterSelected:(UIButton *)sender {
+    _identifier = @"Master";
+    [self setupServer];
 }
 
-- (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender{
+- (IBAction)slaveSelected:(UIButton *)sender {
+    _identifier = @"Slave";
+    [self setupServer];
+}
+
+- (void)setupServer{
     _server = [[Server alloc] init];
+    _server.delegate = self;
     NSError *error = nil;
-    [_server startWithName:identifier error:&error];
+    [_server startWithName:_identifier error:&error];
     if (error) {
         NSLog(@"%@", error);
-        return NO;
+        return;
     }
-    return YES;
+}
+
+#pragma mark - <ServerPublishDelegate>
+
+- (void)serverDidpublished:(NSNetService *)service{
+    [self performSegueWithIdentifier:@"toOrderList" sender:nil];
+}
+
+#pragma mark -<Segue Handle>
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    OrderTableViewController *orderVC = [segue destinationViewController];
+    orderVC.identifier = _identifier;
 }
 
 @end

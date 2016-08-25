@@ -8,12 +8,21 @@
 
 #import <Foundation/Foundation.h>
 
-@interface Server : NSObject
 typedef enum {
     kServerNoSocketsAvailable = 1,
     kServerNoSpaceOnOutputStream = 2,
     kServerOutputStreamReachedCapacity = 3 // should be able to try again 'later'
 } ServerErrorCode;
+
+@protocol ServerPublishDelegate <NSObject>
+
+- (void)serverDidpublished:(NSNetService *)service;
+
+@end
+
+@interface Server : NSObject
+
+@property (nonatomic, weak)id<ServerPublishDelegate> delegate;
 
 - (void)startWithName:(NSString *)name error:(NSError **)error;
 
