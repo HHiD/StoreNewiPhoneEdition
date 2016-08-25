@@ -11,24 +11,30 @@
 #import "OrderCatchManager.h"
 #import "OrderTableViewCell.h"
 #import "DispatchTableViewController.h"
+#import "Server.h"
 #define CELL_IDENTIFIER @"store_identifier"
 @interface OrderTableViewController ()<OrderEditingDelegate>{
     OrderEditingViewController *_editingViewController;
     DispatchTableViewController*_dispatchViewController;
     NSMutableArray *_orderArray;
+    OrderEntity *_selectedEntity;
 }
 @end
 
 @implementation OrderTableViewController
 
 - (void)viewDidLoad {
+    _selectedEntity = nil;
     [super viewDidLoad];
-    [self setupTableView];
+    [self setupServer];
     [self setupDataComponent];
     [self setupNavigationStaff];
 }
-- (void)setupTableView{
-//    [self.tableView registerClass:[OrderTableViewCell class] forCellReuseIdentifier:CELL_IDENTIFIER];
+- (void)setupServer{
+    __weak typeof(self) weakSelf = self;
+    self.server.didRecieveDataCallback = ^(NSData *data){
+        [weakSelf handleRecievedData:data];
+    };
 }
 - (void)setupDataComponent{
     _orderArray = [OrderCatchManager getCatchedEntitiesWithIdentifier:self.identifier];
@@ -42,6 +48,15 @@
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:addingButton];
     self.navigationItem.rightBarButtonItem = rightItem;
 }
+
+- (void)handleRecievedData:(NSData *)data{
+    
+    OrderEntity *orderEntity = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    [_orderArray addObject:orderEntity];
+    [OrderCatchManager catchEntity:orderEntity identifier:self.identifier];
+    [self.tableView reloadData];
+}
+
 
 - (void)addOrder:(UIButton *)button{
     [self performSegueWithIdentifier:@"showEditing" sender:nil];
@@ -64,6 +79,8 @@
     else{
         _dispatchViewController = (DispatchTableViewController *)segue.destinationViewController;
         _dispatchViewController.identifier = self.identifier;
+        _dispatchViewController.server = self.server;
+        _dispatchViewController.orderEntity = _selectedEntity;
     }
 }
 
@@ -75,7 +92,7 @@
 }
 
 - (void)dispatchOrder:(NSIndexPath *)indexPath tableView:(UITableView *)tableView{
-    //More code goes here
+    _selectedEntity = _orderArray[indexPath.row];
     [self performSegueWithIdentifier:@"goDispatch" sender:nil];
 }
 
@@ -105,7 +122,9 @@
     cell.tableSize.text = [NSString stringWithFormat:@"TableSize: %@", entity.tableSize];
     cell.customeName.text = [NSString stringWithFormat:@"CustomeName: %@", entity.customerName];
     cell.shippingMethod.text = [NSString stringWithFormat:@"ShippingMethod: %@", entity.shippingMothod];
-    
+    if ([entity.isFromDispatch isEqualToString:@"YES"]) {
+        cell.backgroundColor = [UIColor redColor];
+    }
     return cell;
 }
 
@@ -129,7 +148,7 @@
     }];
     delete.backgroundColor = [UIColor redColor];
     
-    UITableViewRowAction *dispatchSelection = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@" dispatch " handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
+    UITableViewRowAction *dispatchSelection = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@" Dispatch " handler:^(UITableViewRowAction *action, NSIndexPath *indexPath)
     {
         [weakSelf dispatchOrder:indexPath tableView:tableView];
     }];

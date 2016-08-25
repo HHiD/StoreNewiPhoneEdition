@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "OrderEntity.h"
+
 @protocol OrderEditingDelegate <NSObject>
 
 - (void)completeEditing:(NSArray *)orders;

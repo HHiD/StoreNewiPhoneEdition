@@ -16,6 +16,7 @@
     [aCoder encodeObject:self.customerName forKey:[NSString stringWithFormat:@"%@%@", PRE_NAME, @"customeName"]];
     [aCoder encodeObject:self.tableSize forKey:[NSString stringWithFormat:@"%@%@", PRE_NAME, @"tableSize"]];
     [aCoder encodeObject:self.tableName forKey:[NSString stringWithFormat:@"%@%@", PRE_NAME, @"tableName"]];
+    [aCoder encodeObject:self.isFromDispatch forKey:[NSString stringWithFormat:@"%@%@", PRE_NAME, @"isFromDisPatch"]];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)coder
@@ -27,6 +28,7 @@
         self.customerName = [coder decodeObjectForKey:[NSString stringWithFormat:@"%@%@", PRE_NAME, @"customeName"]];
         self.tableSize = [coder decodeObjectForKey:[NSString stringWithFormat:@"%@%@", PRE_NAME, @"tableSize"]];
         self.tableName = [coder decodeObjectForKey:[NSString stringWithFormat:@"%@%@", PRE_NAME, @"tableName"]];
+        self.isFromDispatch = [coder decodeObjectForKey:[NSString stringWithFormat:@"%@%@", PRE_NAME, @"isFromDisPatch"]];
     }
     return self;
 }

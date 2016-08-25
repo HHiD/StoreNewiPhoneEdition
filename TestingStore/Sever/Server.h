@@ -9,11 +9,15 @@
 #import <Foundation/Foundation.h>
 
 typedef enum {
-    kServerNoSocketsAvailable = 1,
-    kServerNoSpaceOnOutputStream = 2,
-    kServerOutputStreamReachedCapacity = 3 // should be able to try again 'later'
+    kServerCouldNotBindToIPv4Address = 1,
+    kServerCouldNotBindToIPv6Address = 2,
+    kServerNoSocketsAvailable = 3,
+    kServerNoSpaceOnOutputStream = 4,
+    kServerOutputStreamReachedCapacity = 5 // should be able to try again 'later'
 } ServerErrorCode;
 
+typedef void(^serverRemoteConnectionComplete)();
+typedef void(^didRecieveData)(NSData *data);
 @protocol ServerPublishDelegate <NSObject>
 
 - (void)serverDidpublished:(NSNetService *)service;
@@ -23,7 +27,11 @@ typedef enum {
 @interface Server : NSObject
 
 @property (nonatomic, weak)id<ServerPublishDelegate> delegate;
+@property (nonatomic, copy)serverRemoteConnectionComplete connectCompleteCallBack;
+@property (nonatomic, copy)didRecieveData didRecieveDataCallback;
 
-- (void)startWithName:(NSString *)name error:(NSError **)error;
+- (BOOL)start:(NSString *)name error:(NSError **)error;
+- (void)connectToRemoteService:(NSNetService *)selectedService;
+- (BOOL)sendData:(NSData *)data error:(NSError **)error;
 
 @end

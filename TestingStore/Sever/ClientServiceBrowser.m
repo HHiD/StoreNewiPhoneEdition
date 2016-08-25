@@ -31,9 +31,16 @@
     return [[ClientServiceBrowser alloc] initWithServiceName:name];
 }
 
+- (void)stopBrowser {
+    [self.browser stop];
+    [self.browser removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    self.browser = nil;
+}
+
+
 #pragma mark -<ClientSide>
 - (void)clientBrowser{
-    [self.browser stop];
+    [self stopBrowser];
     
     NSString *serviceName = [NSString stringWithFormat:@"_%@HHD._tcp.", _servicename];
     NSLog(@"Search ServiceName: %@", serviceName);
@@ -54,7 +61,6 @@
 - (void)netServiceBrowser:(NSNetServiceBrowser *)netServiceBrowser
            didFindService:(NSNetService *)service
                moreComing:(BOOL)moreComing {
-    NSLog(@"HAHA");
     if (self.delegate) {
         [self.delegate didFindService:service isMorecomming:moreComing];
     }
@@ -63,15 +69,7 @@
 - (void)netServiceBrowser:(NSNetServiceBrowser *)netServiceBrowser
          didRemoveService:(NSNetService *)service
                moreComing:(BOOL)moreComing {
-    NSLog(@"HAHA");
-}
-
-- (void)netServiceBrowser:(NSNetServiceBrowser *)browser didFindDomain:(NSString *)domainString moreComing:(BOOL)moreComing{
-    NSLog(@"HAHA");
-}
-
-- (void)netServiceBrowserDidStopSearch:(NSNetServiceBrowser *)browser{
-    NSLog(@"HAHA");
+    [self stopBrowser];
 }
 
 // Application resumed from background
@@ -80,8 +78,7 @@
 - (void)netServiceBrowser:
 (NSNetServiceBrowser *)netServiceBrowser
              didNotSearch:(NSDictionary *)errorInfo {
-    NSLog(@"HAHA");
-    //    [self restartBrowseAndUpdateUI];
+    [self clientBrowser];
 }
 
 

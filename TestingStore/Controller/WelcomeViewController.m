@@ -37,7 +37,7 @@
     _server = [[Server alloc] init];
     _server.delegate = self;
     NSError *error = nil;
-    [_server startWithName:_identifier error:&error];
+    [_server start:_identifier error:&error];//startWithName:_identifier error:&error];
     if (error) {
         NSLog(@"%@", error);
         return;
@@ -55,6 +55,7 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     OrderTableViewController *orderVC = [segue destinationViewController];
     orderVC.identifier = _identifier;
+    orderVC.server = _server;
 }
 
 @end

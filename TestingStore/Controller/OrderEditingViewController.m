@@ -38,6 +38,7 @@ typedef enum {
         _orderEntity = [OrderEntity new];
         NSMutableArray *entities = [OrderCatchManager getCatchedEntitiesWithIdentifier:self.identifier];
         _orderEntity.identifier = [NSString stringWithFormat:@"%ld", entities.count];
+        _orderEntity.isFromDispatch = @"NO";
     }
 }
 

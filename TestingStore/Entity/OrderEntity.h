@@ -15,4 +15,5 @@
 @property (nonatomic, copy)NSString *tableName;
 @property (nonatomic, copy)NSString *tableSize;
 @property (nonatomic, copy)NSString *identifier;
+@property (nonatomic, copy)NSString *isFromDispatch;
 @end

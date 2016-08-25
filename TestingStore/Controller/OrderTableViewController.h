@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-
+@class Server;
 @interface OrderTableViewController : UITableViewController
 
 @property (nonatomic, copy)NSString *identifier;
+@property (nonatomic, strong)Server *server;
 
 @end
